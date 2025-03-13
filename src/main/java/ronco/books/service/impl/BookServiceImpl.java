@@ -7,6 +7,10 @@ import ronco.books.model.BookEntity;
 import ronco.books.repository.BookRepository;
 import ronco.books.service.BookService;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class BookServiceImpl implements BookService {
 
@@ -22,6 +26,18 @@ public class BookServiceImpl implements BookService {
         final BookEntity bookEntity = BookToBookEntity(book);
         final BookEntity savedBookEntity = bookRepository.save(bookEntity);
         return BookEntityToBook(savedBookEntity);
+    }
+
+    @Override
+    public Optional<Book> findById(String isbn) {
+        final Optional<BookEntity> foundBook = bookRepository.findById(isbn);
+        return foundBook.map(this::BookEntityToBook);
+    }
+
+    @Override
+    public List<Book> listBooks() {
+        final List<BookEntity> foundBooks = bookRepository.findAll();
+        return foundBooks.stream().map(this::BookEntityToBook).collect(Collectors.toList());
     }
 
     private BookEntity BookToBookEntity(Book book) {

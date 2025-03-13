@@ -20,27 +20,6 @@ public class BookController {
     }
 
     @PutMapping(path = "/books/{isbn}")
-    public ResponseEntity<Book> createBook(
-            @PathVariable final String isbn,
-            @RequestBody final Book book) {
-        book.setIsbn(isbn);
-        final Book savedBook = bookService.save(book);
-        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
-    }
-
-    @GetMapping(path = "/books/{isbn}")
-    public ResponseEntity<Book> getBook(@PathVariable final String isbn) {
-        final Optional<Book> foundBook = bookService.findById(isbn);
-        return foundBook.map(book -> new ResponseEntity<Book>(book, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<Book>(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping(path = "/books")
-    public ResponseEntity<List<Book>> listBooks() {
-        return new ResponseEntity<List<Book>>(bookService.listBooks(), HttpStatus.OK);
-    }
-
-    @PutMapping(path = "/books/{isbn}")
     public ResponseEntity<Book> createUpdateBook(
             @PathVariable final String isbn,
             @RequestBody final Book book) {
@@ -50,17 +29,33 @@ public class BookController {
         final Book savedBook = bookService.save(book);
 
         if (isBookExists) {
-            return new ResponseEntity<Book>(savedBook, HttpStatus.OK);
+            return new ResponseEntity<>(savedBook, HttpStatus.OK);
         } else {
-            return new ResponseEntity<Book>(savedBook, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
         }
+    }
+
+    @PostMapping(path = "/books")
+    public ResponseEntity<Book> createBook(@RequestBody final Book book) {
+        final Book savedBook = bookService.save(book);
+        return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "/books/{isbn}")
+    public ResponseEntity<Book> getBook(@PathVariable final String isbn) {
+        final Optional<Book> foundBook = bookService.findById(isbn);
+        return foundBook.map(book -> new ResponseEntity<>(book, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping(path = "/books")
+    public ResponseEntity<List<Book>> listBooks() {
+        return new ResponseEntity<>(bookService.listBooks(), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/books/{isbn}")
     public ResponseEntity<Book> deleteBook(@PathVariable final String isbn) {
-            bookService.deleteBookById(isbn);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        bookService.deleteBookById(isbn);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
 }

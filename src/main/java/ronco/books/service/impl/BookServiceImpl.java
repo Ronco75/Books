@@ -1,6 +1,8 @@
 package ronco.books.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ronco.books.model.Book;
 import ronco.books.model.BookEntity;
@@ -11,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class BookServiceImpl implements BookService {
 
@@ -43,6 +46,15 @@ public class BookServiceImpl implements BookService {
     @Override
     public boolean isBookExist(Book book) {
         return bookRepository.existsById(book.getIsbn());
+    }
+
+    @Override
+    public void deleteBookById(String isbn) {
+        try {
+            bookRepository.deleteById(isbn);
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Attempted to delete non-existing book", e);
+        }
     }
 
 

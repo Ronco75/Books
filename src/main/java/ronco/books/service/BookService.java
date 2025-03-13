@@ -9,9 +9,11 @@ import java.util.Optional;
 @Service
 public interface BookService {
 
-    Book create(Book book);
+    Book save(Book book);
 
     Optional<Book> findById(String isbn);
 
     List<Book> listBooks();
+
+    boolean isBookExist(Book book);
 }

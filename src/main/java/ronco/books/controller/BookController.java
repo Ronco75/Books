@@ -24,7 +24,7 @@ public class BookController {
             @PathVariable final String isbn,
             @RequestBody final Book book) {
         book.setIsbn(isbn);
-        final Book savedBook = bookService.create(book);
+        final Book savedBook = bookService.save(book);
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
 
@@ -39,5 +39,22 @@ public class BookController {
     public ResponseEntity<List<Book>> listBooks() {
         return new ResponseEntity<List<Book>>(bookService.listBooks(), HttpStatus.OK);
     }
+
+    @PutMapping(path = "/books/{isbn}")
+    public ResponseEntity<Book> createUpdateBook(
+            @PathVariable final String isbn,
+            @RequestBody final Book book) {
+        book.setIsbn(isbn);
+
+        final boolean isBookExists = bookService.isBookExist(book);
+        final Book savedBook = bookService.save(book);
+
+        if (isBookExists) {
+            return new ResponseEntity<Book>(savedBook, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<Book>(savedBook, HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 }

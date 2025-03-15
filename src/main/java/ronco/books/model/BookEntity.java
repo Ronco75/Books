@@ -16,6 +16,6 @@ public class BookEntity {
 
     @Id
     private String isbn;
-    private String author;
     private String title;
+    private String author;
 }

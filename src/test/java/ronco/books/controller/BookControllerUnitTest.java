@@ -29,52 +29,49 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(BookController.class) // מגדיר שזוהי בדיקת יחידה לבקר בלבד
+@WebMvcTest(BookController.class)
 public class BookControllerUnitTest {
 
     @Autowired
-    private MockMvc mockMvc; // מאפשר לדמות בקשות HTTP
+    private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper; // ממיר אובייקטים ל-JSON ובחזרה
+    private ObjectMapper objectMapper;
 
     @MockBean
-    private BookService bookService; // מוק לשירות
+    private BookService bookService;
 
     @Captor
-    private ArgumentCaptor<Book> bookCaptor; // לוכד ארגומנטים לבדיקה
+    private ArgumentCaptor<Book> bookCaptor;
 
     @Test
-    @DisplayName("GET /books/{isbn} - כאשר הספר קיים, צריך להחזיר הספר ו-200 OK")
+    @DisplayName("GET /books/{isbn} - When book exists, should return the book and 200 OK")
     void getBook_whenBookExists_shouldReturnBook() throws Exception {
-        // הכנה
+        // Arrange
         Book book = Book.builder()
                 .isbn("12345")
-                .title("כותרת הספר")
-                .author("המחבר")
+                .title("Book Title")
+                .author("Author Name")
                 .build();
 
         when(bookService.findById("12345")).thenReturn(Optional.of(book));
 
-        // ביצוע ובדיקה
+        // Act and Assert
         mockMvc.perform(get("/books/12345"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.isbn", is("12345")))
-                .andExpect(jsonPath("$.title", is("כותרת הספר")))
-                .andExpect(jsonPath("$.author", is("המחבר")));
+                .andExpect(jsonPath("$.title", is("Book Title")))
+                .andExpect(jsonPath("$.author", is("Author Name")));
 
-        // וידוא שהשירות נקרא בדיוק פעם אחת עם המזהה הנכון
         verify(bookService, times(1)).findById("12345");
     }
 
     @Test
-    @DisplayName("GET /books/{isbn} - כאשר הספר אינו קיים, צריך להחזיר 404 Not Found")
+    @DisplayName("GET /books/{isbn} - When book does not exist, should return 404 Not Found")
     void getBook_whenBookDoesNotExist_shouldReturnNotFound() throws Exception {
-        // הכנה
         when(bookService.findById("nonexistent")).thenReturn(Optional.empty());
 
-        // ביצוע ובדיקה
         mockMvc.perform(get("/books/nonexistent"))
                 .andExpect(status().isNotFound());
 
@@ -82,15 +79,13 @@ public class BookControllerUnitTest {
     }
 
     @Test
-    @DisplayName("GET /books - צריך להחזיר את כל הספרים ו-200 OK")
+    @DisplayName("GET /books - Should return all books and 200 OK")
     void listBooks_shouldReturnAllBooks() throws Exception {
-        // הכנה
         when(bookService.listBooks()).thenReturn(Arrays.asList(
-                Book.builder().isbn("1").title("ספר 1").author("מחבר 1").build(),
-                Book.builder().isbn("2").title("ספר 2").author("מחבר 2").build()
+                Book.builder().isbn("1").title("Book 1").author("Author 1").build(),
+                Book.builder().isbn("2").title("Book 2").author("Author 2").build()
         ));
 
-        // ביצוע ובדיקה
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -102,12 +97,10 @@ public class BookControllerUnitTest {
     }
 
     @Test
-    @DisplayName("GET /books - כאשר אין ספרים, צריך להחזיר רשימה ריקה ו-200 OK")
+    @DisplayName("GET /books - When no books exist, should return empty list and 200 OK")
     void listBooks_whenNoBooks_shouldReturnEmptyList() throws Exception {
-        // הכנה
         when(bookService.listBooks()).thenReturn(Collections.emptyList());
 
-        // ביצוע ובדיקה
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -117,94 +110,85 @@ public class BookControllerUnitTest {
     }
 
     @Test
-    @DisplayName("POST /books - צריך ליצור ספר חדש ולהחזיר 201 Created")
+    @DisplayName("POST /books - Should create a new book and return 201 Created")
     void createBook_shouldReturnCreatedBook() throws Exception {
-        // הכנה
         Book bookToCreate = Book.builder()
                 .isbn("new-isbn")
-                .title("ספר חדש")
-                .author("מחבר חדש")
+                .title("New Book")
+                .author("New Author")
                 .build();
 
         when(bookService.save(any(Book.class))).thenReturn(bookToCreate);
 
-        // ביצוע ובדיקה
         mockMvc.perform(post("/books")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(bookToCreate)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isbn", is("new-isbn")))
-                .andExpect(jsonPath("$.title", is("ספר חדש")))
-                .andExpect(jsonPath("$.author", is("מחבר חדש")));
+                .andExpect(jsonPath("$.title", is("New Book")))
+                .andExpect(jsonPath("$.author", is("New Author")));
 
-        // וידוא שהשירות נקרא עם האובייקט הנכון
         verify(bookService).save(bookCaptor.capture());
         Book capturedBook = bookCaptor.getValue();
 
         assertThat(capturedBook.getIsbn()).isEqualTo("new-isbn");
-        assertThat(capturedBook.getTitle()).isEqualTo("ספר חדש");
+        assertThat(capturedBook.getTitle()).isEqualTo("New Book");
     }
 
     @Test
-    @DisplayName("PUT /books/{isbn} - עדכון ספר קיים צריך להחזיר 200 OK")
+    @DisplayName("PUT /books/{isbn} - Updating an existing book should return 200 OK")
     void updateBook_whenBookExists_shouldReturnUpdatedBook() throws Exception {
-        // הכנה
         Book bookToUpdate = Book.builder()
-                .title("ספר מעודכן")
-                .author("מחבר מעודכן")
+                .title("Updated Book")
+                .author("Updated Author")
                 .build();
 
         Book updatedBook = Book.builder()
                 .isbn("update-isbn")
-                .title("ספר מעודכן")
-                .author("מחבר מעודכן")
+                .title("Updated Book")
+                .author("Updated Author")
                 .build();
 
         when(bookService.isBookExist(any(Book.class))).thenReturn(true);
         when(bookService.save(any(Book.class))).thenReturn(updatedBook);
 
-        // ביצוע ובדיקה
         mockMvc.perform(put("/books/update-isbn")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(bookToUpdate)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isbn", is("update-isbn")))
-                .andExpect(jsonPath("$.title", is("ספר מעודכן")));
+                .andExpect(jsonPath("$.title", is("Updated Book")));
 
-        // וידוא שהפונקציות במוק נקראו עם הפרמטרים הנכונים
         verify(bookService).save(bookCaptor.capture());
         Book capturedBook = bookCaptor.getValue();
 
         assertThat(capturedBook.getIsbn()).isEqualTo("update-isbn");
-        assertThat(capturedBook.getTitle()).isEqualTo("ספר מעודכן");
+        assertThat(capturedBook.getTitle()).isEqualTo("Updated Book");
     }
 
     @Test
-    @DisplayName("PUT /books/{isbn} - יצירת ספר חדש באמצעות PUT צריכה להחזיר 201 Created")
+    @DisplayName("PUT /books/{isbn} - Creating a new book with PUT should return 201 Created")
     void updateBook_whenBookDoesNotExist_shouldReturnCreatedStatus() throws Exception {
-        // הכנה
         Book newBook = Book.builder()
-                .title("ספר חדש")
-                .author("מחבר חדש")
+                .title("New Book")
+                .author("New Author")
                 .build();
 
         Book savedBook = Book.builder()
                 .isbn("new-isbn")
-                .title("ספר חדש")
-                .author("מחבר חדש")
+                .title("New Book")
+                .author("New Author")
                 .build();
 
         when(bookService.isBookExist(any(Book.class))).thenReturn(false);
         when(bookService.save(any(Book.class))).thenReturn(savedBook);
 
-        // ביצוע ובדיקה
         mockMvc.perform(put("/books/new-isbn")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newBook)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.isbn", is("new-isbn")));
 
-        // וידוא שמזהה הספר הוגדר נכון בבקשה שנשלחה לשירות
         verify(bookService).save(bookCaptor.capture());
         Book capturedBook = bookCaptor.getValue();
 
@@ -212,12 +196,10 @@ public class BookControllerUnitTest {
     }
 
     @Test
-    @DisplayName("DELETE /books/{isbn} - צריך למחוק ספר ולהחזיר 204 No Content")
+    @DisplayName("DELETE /books/{isbn} - Should delete a book and return 204 No Content")
     void deleteBook_shouldReturnNoContent() throws Exception {
-        // הכנה
         doNothing().when(bookService).deleteBookById(anyString());
 
-        // ביצוע ובדיקה
         mockMvc.perform(delete("/books/delete-isbn"))
                 .andExpect(status().isNoContent());
 

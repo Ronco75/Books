@@ -13,7 +13,7 @@ public class BookModelTest {
     private static final String TEST_AUTHOR = "Test Author";
 
     @Test
-    @DisplayName("מודל Book - בניית אובייקט באמצעות בנאי הלומבוק צריכה לאתחל את כל השדות")
+    @DisplayName("Book model - Building object with Lombok builder should initialize all fields")
     void book_builderShouldInitializeAllFields() {
         Book book = Book.builder()
                 .isbn(TEST_ISBN)
@@ -27,7 +27,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל Book - set/get צריכים לעבוד בצורה תקינה")
+    @DisplayName("Book model - Setters and getters should work correctly")
     void book_setterGetterShouldWorkCorrectly() {
         Book book = new Book();
 
@@ -41,7 +41,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל Book - בנאי עם פרמטרים צריך לאתחל את כל השדות")
+    @DisplayName("Book model - Constructor with parameters should initialize all fields")
     void book_constructorWithParametersShouldInitializeAllFields() {
         Book book = new Book(TEST_ISBN, TEST_TITLE, TEST_AUTHOR);
 
@@ -51,7 +51,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל Book - שיטת equals ו-hashCode צריכות לעבוד כצפוי")
+    @DisplayName("Book model - Equals and hashCode methods should work as expected")
     void book_equalsAndHashCodeShouldWorkCorrectly() {
         Book book1 = Book.builder()
                 .isbn("same-isbn")
@@ -78,7 +78,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל Book - שיטת toString צריכה להכיל את כל שדות האובייקט")
+    @DisplayName("Book model - ToString method should contain all object fields")
     void book_toStringShouldContainAllFields() {
         Book book = Book.builder()
                 .isbn("12345")
@@ -96,7 +96,7 @@ public class BookModelTest {
     // BookEntity class tests
 
     @Test
-    @DisplayName("מודל BookEntity - בניית אובייקט באמצעות בנאי הלומבוק צריכה לאתחל את כל השדות")
+    @DisplayName("BookEntity model - Building object with Lombok builder should initialize all fields")
     void bookEntity_builderShouldInitializeAllFields() {
         BookEntity bookEntity = BookEntity.builder()
                 .isbn(TEST_ISBN)
@@ -110,7 +110,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל BookEntity - set/get צריכים לעבוד בצורה תקינה")
+    @DisplayName("BookEntity model - Setters and getters should work correctly")
     void bookEntity_setterGetterShouldWorkCorrectly() {
         BookEntity bookEntity = new BookEntity();
 
@@ -124,7 +124,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל BookEntity - בנאי עם פרמטרים צריך לאתחל את כל השדות")
+    @DisplayName("BookEntity model - Constructor with parameters should initialize all fields")
     void bookEntity_constructorWithParametersShouldInitializeAllFields() {
         BookEntity bookEntity = new BookEntity(TEST_ISBN, TEST_TITLE, TEST_AUTHOR);
 
@@ -134,7 +134,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל BookEntity - שיטת equals ו-hashCode צריכות לעבוד כצפוי")
+    @DisplayName("BookEntity model - Equals and hashCode methods should work as expected")
     void bookEntity_equalsAndHashCodeShouldWorkCorrectly() {
         BookEntity entity1 = BookEntity.builder()
                 .isbn("same-isbn")
@@ -161,7 +161,7 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל BookEntity - שיטת toString צריכה להכיל את כל שדות האובייקט")
+    @DisplayName("BookEntity model - ToString method should contain all object fields")
     void bookEntity_toStringShouldContainAllFields() {
         BookEntity bookEntity = BookEntity.builder()
                 .isbn("12345")
@@ -177,11 +177,9 @@ public class BookModelTest {
     }
 
     @Test
-    @DisplayName("מודל BookEntity - וידוא שהאנוטציות של JPA מוגדרות נכון")
+    @DisplayName("BookEntity model - Verify JPA annotations are configured correctly")
     void bookEntity_jpaAnnotationsShouldBeConfiguredCorrectly() {
-
         assertThat(BookEntity.class.isAnnotationPresent(jakarta.persistence.Entity.class)).isTrue();
-
         assertThat(BookEntity.class.isAnnotationPresent(jakarta.persistence.Table.class)).isTrue();
     }
 }

@@ -6,14 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@ActiveProfiles("test") // פרופיל הרצה לבדיקות
+@ActiveProfiles("test")
 class BooksApplicationTests {
 
     @Test
-    @DisplayName("האפליקציה צריכה לעלות נכון וה-context להיטען בהצלחה")
+    @DisplayName("Application should start correctly and the context should load successfully")
     void contextLoads() {
-        // בדיקה פשוטה שבודקת שהאפליקציה עולה ללא שגיאות
-        // אם הבדיקה עוברת, זה אומר שכל הבינים (beans) נטענו בהצלחה
     }
 
 }

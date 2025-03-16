@@ -26,21 +26,21 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book save(final Book book) {
-        final BookEntity bookEntity = BookToBookEntity(book);
+        final BookEntity bookEntity = bookToBookEntity(book);
         final BookEntity savedBookEntity = bookRepository.save(bookEntity);
-        return BookEntityToBook(savedBookEntity);
+        return bookEntityToBook(savedBookEntity);
     }
 
     @Override
     public Optional<Book> findById(String isbn) {
         final Optional<BookEntity> foundBook = bookRepository.findById(isbn);
-        return foundBook.map(this::BookEntityToBook);
+        return foundBook.map(this::bookEntityToBook);
     }
 
     @Override
     public List<Book> listBooks() {
         final List<BookEntity> foundBooks = bookRepository.findAll();
-        return foundBooks.stream().map(this::BookEntityToBook).collect(Collectors.toList());
+        return foundBooks.stream().map(this::bookEntityToBook).collect(Collectors.toList());
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BookServiceImpl implements BookService {
     }
 
 
-    private BookEntity BookToBookEntity(Book book) {
+    private BookEntity bookToBookEntity(Book book) {
         return BookEntity.builder()
                 .isbn(book.getIsbn())
                 .title(book.getTitle())
@@ -66,7 +66,7 @@ public class BookServiceImpl implements BookService {
                 .build();
     }
 
-    private Book BookEntityToBook(BookEntity bookEntity) {
+    private Book bookEntityToBook(BookEntity bookEntity) {
         return Book.builder()
                 .isbn(bookEntity.getIsbn())
                 .title(bookEntity.getTitle())

@@ -10,15 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SwaggerConfigTest {
 
     @Test
-    @DisplayName("הקונפיגורציה של Swagger צריכה ליצור אובייקט OpenAPI עם הפרטים הנכונים")
+    @DisplayName("Swagger configuration should create an OpenAPI object with correct details")
     void api_shouldCreateOpenAPIWithCorrectInfo() {
-        // הכנה
         SwaggerConfig swaggerConfig = new SwaggerConfig();
 
-        // הרצה
         OpenAPI openAPI = swaggerConfig.api();
 
-        // בדיקה
         assertThat(openAPI).isNotNull();
         assertThat(openAPI.getInfo()).isNotNull();
 

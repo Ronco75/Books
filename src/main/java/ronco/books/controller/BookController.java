@@ -3,6 +3,7 @@ package ronco.books.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ronco.books.model.Book;
 import ronco.books.service.BookService;
@@ -20,6 +21,7 @@ public class BookController {
     }
 
     @PutMapping(path = "/books/{isbn}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Book> createUpdateBook(
             @PathVariable final String isbn,
             @RequestBody final Book book) {
@@ -36,6 +38,7 @@ public class BookController {
     }
 
     @PostMapping(path = "/books")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Book> createBook(@RequestBody final Book book) {
         final Book savedBook = bookService.save(book);
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
@@ -54,6 +57,7 @@ public class BookController {
     }
 
     @DeleteMapping(value = "/books/{isbn}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Book> deleteBook(@PathVariable final String isbn) {
         bookService.deleteBookById(isbn);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
